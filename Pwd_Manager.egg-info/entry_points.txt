@@ -1,0 +1,2 @@
+[console_scripts]
+vaulty = src.pw:main
