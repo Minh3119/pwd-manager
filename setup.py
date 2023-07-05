@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="Pwd Manager",
     version='0.0.1',
-    py_modules=['pw','src'],
+    py_modules=['src'],
     install_requires=[
         'Click',
     ],

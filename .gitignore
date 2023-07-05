@@ -2,3 +2,5 @@ __pycache__/
 myenv/
 Pwd_Manager.egg-info/
 build/
+bank.json
+passwords.json
