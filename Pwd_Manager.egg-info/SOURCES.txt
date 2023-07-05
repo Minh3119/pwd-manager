@@ -1,7 +1,0 @@
-setup.py
-Pwd_Manager.egg-info/PKG-INFO
-Pwd_Manager.egg-info/SOURCES.txt
-Pwd_Manager.egg-info/dependency_links.txt
-Pwd_Manager.egg-info/entry_points.txt
-Pwd_Manager.egg-info/requires.txt
-Pwd_Manager.egg-info/top_level.txt
