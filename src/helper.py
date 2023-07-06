@@ -1,7 +1,8 @@
 import os
 import json
 from cryptography.fernet import Fernet
-
+import random
+import string
 
 def jsonFileCheck(path, file_name:str):    
     if not os.path.exists(file_name):
@@ -41,4 +42,46 @@ def get_register_data():
         "key" : key.decode()
     }
     return data
+
+
+smlLtrs = string.ascii_lowercase
+capLtrs = string.ascii_uppercase
+numbers = string.digits
+symbols = string.punctuation
+
+set = [smlLtrs, numbers, symbols, capLtrs]
+
+
+def gen_password():
+
+    passwd = []
+    # Making sure the generated password has all types of chars
+    passwd += random.choice(smlLtrs)
+    passwd += random.choice(capLtrs)
+    passwd += random.choice(numbers)
+
+    symbol_counter = 0
+
+    letters = random.randint(10, 16)
+
+    while symbol_counter < 3:
+        temp = random.choice(symbols)
+        if temp not in passwd:
+            passwd.append(temp)
+            symbol_counter += 1
+
+    for i in range(letters - 6):
+        chosen_set = random.choice(set)
+        key = random.choice(chosen_set)
+        passwd += key
+
+    # Shuffling
+    random.shuffle(passwd)
+
+    # Converting to String
+    final = ""
+    for each in passwd:
+        final += each
+
+    return final
 

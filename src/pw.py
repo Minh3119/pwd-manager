@@ -2,7 +2,7 @@ import click
 import json
 import pyperclip
 import io
-from src.helper import jsonFileCheck, encrypt_password, decrypt_password
+from src.helper import jsonFileCheck, encrypt_password, decrypt_password, gen_password
 
 
 NAME_PROMPT = "Username/Email"
@@ -10,15 +10,33 @@ PASSWORD_PROMPT = "Password"
 PASSWORDS_FILE = "passwords.json"
 
 
-@click.group()
+class SimpleAliases(click.Group):
+    def command(self, *args, **kwargs):
+        aliases = kwargs.pop('aliases', [])
+        def decorator(f):
+            cmd = click.decorators.command(*args, **kwargs)(click.pass_context(f))
+            self.add_command(cmd)
+            for alias in aliases:
+                g = click.pass_context(f)
+                g.__doc__ = '+ alias for `{}`'.format(cmd.name)
+                alias_cmd = click.decorators.command(*args, **kwargs)(g)
+                alias_cmd = self.add_command(alias_cmd, name=alias)
+            return cmd
+        return decorator
+
+
+@click.group(cls=SimpleAliases)
 def main():
     jsonFileCheck("", "bank.json")
     jsonFileCheck("", "passwords.json")
 
-@main.command()
-@click.option('name', '-n', '-u', '-e', '--name', '--username', '--email', default=None, help="The username/email of an account you're adding")
+@main.command(name="add", aliases=["create"])
+@click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account you're adding")
 @click.option('-p', '--password', default=None, help="Password of the account")
-def add(name, password):
+def add(ctx:click.core.Context, name, password):
+    """
+    Add an account username + password to the vault.
+    """
     if not name:
         name = click.prompt(NAME_PROMPT)
     if not password:
@@ -30,9 +48,12 @@ def add(name, password):
     add_pwd(name, password)
     click.echo(f"Added {name}.")
 
-@main.command()
-@click.option('name', '-n', '-u', '-e', '--name', '--username', '--email', default=None, help="The username/email of an account")
-def get(name):
+@main.command(name="get", aliases=["g", "copy", "password"])
+@click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account")
+def get(ctx:click.core.Context, name):
+    """
+    Get saved password in vault and copy it to your clipboard.
+    """
     if not name:
         name = click.prompt(NAME_PROMPT)
     if not get_pwd(name):
@@ -42,10 +63,13 @@ def get(name):
     copy2clipboard(pwd)
     click.echo("Copied password to clipboard.")
 
-@main.command()
-@click.option('name', '-n', '-u', '-e', '--name', '--username', '--email', default=None, help="The username/email of an account you're modifying")
+@main.command(name="modify", aliases=["change", "edit"])
+@click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account you're modifying")
 @click.option('-p', '--password', default=None, help="Password of the account")
-def modify(name, password):
+def modify(ctx:click.core.Context, name, password):
+    """
+    Change password.
+    """
     if not name:
         name = click.prompt(NAME_PROMPT)
     if not password:
@@ -56,9 +80,12 @@ def modify(name, password):
     change_pwd(name, password)
     click.echo(f"Modified {name}.")
 
-@main.command()
-@click.option('name', '-n', '-u', '-e', '--name', '--username', '--email', default=None, help="The username/email of an account you're modifying")
-def delete(name):
+@main.command(name="delete", aliases=["remove"])
+@click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account you're modifying")
+def delete(ctx:click.core.Context, name):
+    """
+    Delete an account from the vault.
+    """
     if not name:
         name = click.prompt(NAME_PROMPT)
     if not get_pwd(name):
@@ -68,14 +95,26 @@ def delete(name):
     delete_account(name)
     click.echo(f"Deleted {name}.")
 
-@main.command(name="list")
-def get_list():
+@main.command(name="list", aliases=["accounts", "saved"])
+def get_list(ctx:click.core.Context, ):
+    """
+    Get a list of usernames represents saved accounts.
+    """
     data = get_list_acc()
     ss = io.StringIO()
     for index, value in enumerate(data):
         ss.write(str(index+1) + ". " + str(value) + "\n")
     click.echo(ss.getvalue())
 
+@main.command(name="generate", aliases=["gen"])
+def get_new_password(ctx:click.core.Context):
+    """
+    Generate a new random password and copy it to clipboard.
+    """
+    click.echo("Generating new password for you...")
+    new_pw = gen_password()
+    click.echo(new_pw)
+    copy2clipboard(new_pw)
 
 
 def copy2clipboard(text):

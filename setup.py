@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="Pwd Manager",
@@ -7,9 +7,13 @@ setup(
     install_requires=[
         'Click',
     ],
+    requires = ["setuptools"],
     entry_points={
         'console_scripts': [
             'vaulty = src.pw:main'
         ]
-    }
+    },
+    packages=find_packages(
+        where='src',
+    ),
 )
