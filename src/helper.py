@@ -3,8 +3,9 @@ import json
 from cryptography.fernet import Fernet
 import random
 import string
+from xkcdpass import xkcd_password as xp
 
-def jsonFileCheck(path, file_name:str):    
+def jsonFileCheck(file_name:str):    
     if not os.path.exists(file_name):
         if file_name == "bank.json":
             print("Rewriting file1")

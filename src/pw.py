@@ -1,4 +1,4 @@
-import click
+from src import click
 import json
 import pyperclip
 import io
@@ -27,8 +27,8 @@ class SimpleAliases(click.Group):
 
 @click.group(cls=SimpleAliases)
 def main():
-    jsonFileCheck("", "bank.json")
-    jsonFileCheck("", "passwords.json")
+    jsonFileCheck("bank.json")
+    jsonFileCheck("passwords.json")
 
 @main.command(name="add", aliases=["create"])
 @click.argument('name', required=False)
