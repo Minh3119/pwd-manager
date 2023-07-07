@@ -31,6 +31,8 @@ def main():
     jsonFileCheck("", "passwords.json")
 
 @main.command(name="add", aliases=["create"])
+@click.argument('name', required=False)
+@click.argument('password', required=False)
 @click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account you're adding")
 @click.option('-p', '--password', default=None, help="Password of the account")
 def add(ctx:click.core.Context, name, password):
@@ -49,6 +51,7 @@ def add(ctx:click.core.Context, name, password):
     click.echo(f"Added {name}.")
 
 @main.command(name="get", aliases=["g", "copy", "password"])
+@click.argument('name', required=False)
 @click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account")
 def get(ctx:click.core.Context, name):
     """
@@ -64,6 +67,8 @@ def get(ctx:click.core.Context, name):
     click.echo("Copied password to clipboard.")
 
 @main.command(name="modify", aliases=["change", "edit"])
+@click.argument('name', required=False)
+@click.argument('password', required=False)
 @click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account you're modifying")
 @click.option('-p', '--password', default=None, help="Password of the account")
 def modify(ctx:click.core.Context, name, password):
@@ -81,6 +86,7 @@ def modify(ctx:click.core.Context, name, password):
     click.echo(f"Modified {name}.")
 
 @main.command(name="delete", aliases=["remove"])
+@click.argument('name', required=False)
 @click.option('name', '-n', '--name', '--username', '--email', default=None, help="The username/email of an account you're modifying")
 def delete(ctx:click.core.Context, name):
     """
