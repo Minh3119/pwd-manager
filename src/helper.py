@@ -1,9 +1,5 @@
-import os
-import json
-from cryptography.fernet import Fernet
-import random
-import string
-from xkcdpass import xkcd_password as xp
+from src import os, io, json, Fernet, random, string
+from src import xp
 
 def jsonFileCheck(file_name:str):    
     if not os.path.exists(file_name):
@@ -86,3 +82,7 @@ def gen_password():
 
     return final
 
+def generate_xkcd_password(numwords:int, min_word_length:int, max_word_length:int, delimiter:str):
+    wordfile = xp.locate_wordfile()
+    mywords = xp.generate_wordlist(wordfile=wordfile, min_length=min_word_length, max_length=max_word_length)
+    return xp.generate_xkcdpassword(wordlist=mywords, numwords=numwords, delimiter=delimiter)

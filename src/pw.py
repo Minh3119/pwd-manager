@@ -1,8 +1,5 @@
-from src import click
-import json
-import pyperclip
-import io
-from src.helper import jsonFileCheck, encrypt_password, decrypt_password, gen_password
+from src import click, json, pyperclip, io
+from src.helper import jsonFileCheck, encrypt_password, decrypt_password, gen_password, generate_xkcd_password
 
 
 NAME_PROMPT = "Username/Email"
@@ -27,6 +24,10 @@ class SimpleAliases(click.Group):
 
 @click.group(cls=SimpleAliases)
 def main():
+    """
+    Vaulty - CLI password manager.
+    Features: Password inputs/outputs are hidden from the UI. Also supports password generator, password encryption (beta)
+    """
     jsonFileCheck("bank.json")
     jsonFileCheck("passwords.json")
 
@@ -107,13 +108,17 @@ def get_list(ctx:click.core.Context, ):
     click.echo(ss.getvalue())
 
 @main.command(name="generate", aliases=["gen"])
-def get_new_password(ctx:click.core.Context):
+@click.option('-n', '--numwords', default=5, help="Number of words to generate (default=6)")
+@click.option('--min', '--min_length', 'min_length', default=3, help="Minimum length of each word (default=5)")
+@click.option('--max', '--max_length', 'max_length', default=9, help="Maximum length of each word (default=9)")
+@click.option('-d', '--delimiter', default=".", help="Delimiter between words (default=.)")
+def get_new_password(ctx:click.core.Context, numwords:int, min_length:int, max_length:int, delimiter:str):
     """
-    Generate a new random password and copy it to clipboard.
+    Generate a new xkcd password and copy it to clipboard.
+    E.g: vaulty gen -n=5 --min=4 --max=8 -d=/
     """
-    click.echo("Generating new password for you...")
-    new_pw = gen_password()
-    click.echo(new_pw)
+    new_pw = generate_xkcd_password(numwords=numwords, min_word_length=min_length, max_word_length=max_length, delimiter=delimiter)
+    click.echo("Copied new password to clipboard.")
     copy2clipboard(new_pw)
 
 
